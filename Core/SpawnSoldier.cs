@@ -7,24 +7,36 @@ using TowerAttack.AI;
 
 namespace TowerAttack.Core
 {
+    //Attach to the cost icon.
     public class SpawnSoldier : MonoBehaviour
     {
         [SerializeField] SoldierPiece soldierPiece=null;
+        //used to control cool down time.
         [SerializeField] SpawnCoolDown spawnCoolDown=null;
 
-        private Camp camp;
+        private Text costText;
 
+        void Awake()
+        {
+            costText=GetComponentInChildren<Text>();
+        }
+
+        //If the soldier can be spawned, spend money→ spawn one→ reset cool down time.
         public void OnClick()
         {
             if (!spawnCoolDown.CanBeSpawn()) return;
-            camp = FindObjectOfType<CampManager>().GetCamp();
+            //Get the selected camp.
+            Camp camp = FindObjectOfType<CampManager>().GetCamp();
             if (camp == null) return;
 
-            int cost = int.Parse(GetComponentInChildren<Text>().text);
+            //Spend money from balance.
+            int cost = int.Parse(costText.text);
             if (!FindObjectOfType<Balance>().SetBalance(0 - cost)) return;
-
+            
+            //Spawn a soldier to spawn point.
             Transform spawnPoint = camp.GetComponentInChildren<SpawnPoint>().transform;
             soldierPiece.SpawnSoldier(spawnPoint);
+            //Reset cool down time.
             spawnCoolDown.ResetCoolDownTime();
         }
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace TowerAttack.Stats
 {
+    //Attach to main camera.
     public class ParameterManager : MonoBehaviour
     {
         //Controls all the towers and other parameters.

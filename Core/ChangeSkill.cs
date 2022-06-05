@@ -1,35 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using TowerAttack.AI;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class ChangeSkill : MonoBehaviour, IPointerClickHandler
+namespace TowerAttack.Core
 {
-    [SerializeField] SoldierPiece soldierPiece=null;
-    [SerializeField] ChangeSkill hideTarget=null;
-    [SerializeField] GameObject greyFrame=null;
-    [SerializeField] Image image=null;
-    [SerializeField] int skillType=1;
-
-    public void OnPointerClick(PointerEventData eventData)
+    //Attach to all skill icons.
+    public class ChangeSkill : MonoBehaviour, IPointerClickHandler
     {
-        if (!soldierPiece.ChangeSkill(skillType)) return;
+        [SerializeField] SoldierPiece soldierPiece = null;
+        //used to call the SetFalse method for hide icon.
+        [SerializeField] ChangeSkill hideTarget = null;
+        //greyFrame should shows off when clicked.
+        [SerializeField] GameObject greyFrame = null;
+        [SerializeField] Image image = null;
+        [SerializeField] int skillType = 1;
 
-        setTrue();
-        hideTarget.setFalse();
-    }
+        //When the icon clicked, open up this icon and close the other one.
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!soldierPiece.ChangeSkill(skillType)) return;
 
-    private void setTrue()
-    {
-        greyFrame.SetActive(true);
-        image.color = new Color32(50, 50, 50, 255);
-    }
+            setTrue();
+            hideTarget.setFalse();
+        }
 
-    public void setFalse()
-    {
-        greyFrame.SetActive(false);
-        image.color = new Color32(255, 255, 255, 255);
+        //Show the greyFrame and change the color to dark.
+        private void setTrue()
+        {
+            greyFrame.SetActive(true);
+            image.color = new Color32(50, 50, 50, 255);
+        }
+        //Close the greyFrame and change the color to bright.
+        public void setFalse()
+        {
+            greyFrame.SetActive(false);
+            image.color = new Color32(255, 255, 255, 255);
+        }
     }
 }

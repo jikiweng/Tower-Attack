@@ -4,57 +4,62 @@ using UnityEngine;
 
 namespace TowerAttack.AI
 {
+    //Controls all the parameters for the soldier.
     [CreateAssetMenu(fileName = "SoldierPiece", menuName = "SoldierPiece/Make New SoldierPiece", order = 0)]
     public class SoldierPiece : ScriptableObject
     {
         //the cool down time after spawn a soldier.
         public float coolDownTime = 5f;
         //the cool down time after the soldier attacks.
-        public float attackTime = 3f;
+        public float attackTime1 = 3f;
+        public float attackTime2 = 3f;
         //the distance this soldier can detect target.
         public float detectDistance = 5f;
         //the distance of it's weapon can reach.
-        public float attackDistance = 5f;
+        public float attackDistance1 = 5f;
+        public float attackDistance2 = 5f;
+        //the damage amount of this soldier.
+        public float damage1 = 5;
+        public float damage2 = 5;
         //the moving speed of this soldier.
         public float speed = 3f;
 
         //the int between 1~2 decides which attack type of this soldier.
         public int skillType=1;
-        //the damage amount of this soldier.
-        public int damage = 5;
         //the cost of spawning one of this soldier.
         public int cost=50;
-        //the string that 
+        //the string that tells which soldier it is.
         public string soldierType="Soldier 1";
 
         public GameObject soldierPrefab;
         public AnimatorOverrideController overrideController = null;
+        //this tells which type this soldier should attack.
         public CombatTargetType combatTargetType = CombatTargetType.Friend;
-
-        private void Awake()
-        {
-            skillType=1;
-        }
 
         public void SpawnSoldier(Transform position)
         {
             if (soldierPrefab == null) return;
 
+            //Spawn soldiers and set the tag for them.
             GameObject spawn = Instantiate(soldierPrefab, position);
             if(soldierType!="") spawn.tag = soldierType;
 
+            //if skillType equals to 2, change the attackType after spawn it.
             if(skillType==2)
-                spawn.GetComponentInChildren<Animator>().SetBool("AttackType",false);
+                spawn.GetComponent<Animator>().SetBool("AttackType",false);
         }
 
+        //Change skill for every spawned soldier. 
         public bool ChangeSkill(int skill)
         {
+            //If the skill clicked equals to current skill, do nothing.
             if(skill==skillType) return false;
 
+            //Find all the soldiers with the same tags, and change the attackType.
             GameObject[] soldiers = GameObject.FindGameObjectsWithTag(soldierType);
             foreach (GameObject soldier in soldiers)
             {
-                Animator animator = soldier.GetComponentInChildren<Animator>();
+                Animator animator = soldier.GetComponent<Animator>();
 
                 if (skill == 1)
                     animator.SetBool("AttackType", true);
@@ -63,6 +68,7 @@ namespace TowerAttack.AI
 
             }
 
+            //Change current skill type.
             skillType=skill;
             return true;
         }
