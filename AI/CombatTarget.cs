@@ -18,6 +18,9 @@ namespace TowerAttack.AI
         [SerializeField] GameObject replaceTower=null;
         [SerializeField] int reward=300;
 
+        [SerializeField] CanvasGroup canvasGroup=null;
+        [SerializeField] BoxCollider boxCollider=null;
+
         //healthPoint equals to current health point, which will change on damaged.
         //MaxHealthPoint is the max of health point, changing when level up.
         private float healthPoint;
@@ -88,6 +91,10 @@ namespace TowerAttack.AI
         }
 
         public void CastleDie()
-        { }
+        { 
+            FindObjectOfType<ParameterManager>().SetResult(1);
+            canvasGroup.blocksRaycasts = false;
+            boxCollider.enabled=false;
+        }
     }
 }

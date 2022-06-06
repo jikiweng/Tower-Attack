@@ -11,6 +11,10 @@ namespace TowerAttack.Stats
         public readonly List<Tower> TowerList = new List<Tower>();
         private GameObject[] list;
 
+        //result=0:gaming result=1:win result=-1:lose
+        private int result=0;
+        public int GetResult(){ return result; }
+        public void SetResult(int result){ this.result=result; }
 
         //Put all the towers into the list so that the soldier can find the nearest one.
         void Start()

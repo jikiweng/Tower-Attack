@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 namespace TowerAttack.Core
 {
     //Attach to the camp prefab.
-    public class Camp : MonoBehaviour, IRaycastable, IPointerClickHandler
+    public class Camp : MonoBehaviour, IPointerClickHandler
     {
         //Used to change color.
         private Material material;
@@ -16,18 +16,6 @@ namespace TowerAttack.Core
         void Awake()
         {
             material = GetComponentInChildren<Renderer>().material;
-        }
-
-        //Called by MouseControl, tell it which type of the cursor should be used.
-        public CursorType GetCursorType()
-        {
-            return CursorType.Select;
-        }
-
-        //Called by MouseControl, tells this object can be clicked.
-        public bool HandleRaycast()
-        {
-            return true;
         }
 
         //Once clicked, change the clicked camp's color and show all the cost buttons.
