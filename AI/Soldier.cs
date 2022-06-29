@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using TowerAttack.Combat;
 using TowerAttack.Stats;
 
 namespace TowerAttack.AI
@@ -10,12 +11,16 @@ namespace TowerAttack.AI
     public class Soldier : MonoBehaviour
     {
         [SerializeField] SoldierPiece soldierPiece=null;
+        [SerializeField] Transform projectileTransform=null;
+        [SerializeField] GameObject attackEffect=null;
 
         //The below parameters come from soldierPiece.
         private int skillType;
         private float damage;
+        private float basicDamage;
         private float attackTime;
         private float attackDistance;
+        private int criticalRate;
         private float speed;
         private float timeBetweenAttack = Mathf.Infinity;
         //This shows the currentAction is move or attack.
@@ -31,20 +36,7 @@ namespace TowerAttack.AI
 
         private void Awake()
         {
-            //If the skillType is 2, get below parameters from type 2.
             skillType=soldierPiece.skillType;
-            if(skillType==1)
-            {
-                damage = soldierPiece.damage1;
-                attackTime = soldierPiece.attackTime1;
-                attackDistance = soldierPiece.attackDistance1;
-            }
-            else
-            {
-                damage = soldierPiece.damage2;
-                attackTime = soldierPiece.attackTime2;
-                attackDistance = soldierPiece.attackDistance2;
-            }
             speed = soldierPiece.speed;
             overrideController = soldierPiece.overrideController;
 
@@ -53,10 +45,19 @@ namespace TowerAttack.AI
             animator = GetComponent<Animator>();
             combatTargetType=GetComponent<CombatTarget>().combatTargetType;
             detectTarget=GetComponentInChildren<DetectTarget>();
+            ChangeSkill();
 
             //Set the animator override controller.
             if (overrideController != null)
                 animator.runtimeAnimatorController = overrideController;
+        }
+
+        public void ChangeSkill()
+        {
+            basicDamage = soldierPiece.damage;
+            attackTime = soldierPiece.attackTime;
+            attackDistance = soldierPiece.attackDistance;
+            criticalRate=soldierPiece.criticalRate;
         }
 
         void Update()
@@ -125,7 +126,9 @@ namespace TowerAttack.AI
 
             //Set the distance and combatTarget.
             min = targetTower.GetDistance(min);
+            //Debug.Log("("+targetTower.towerTransform.position.x+","+targetTower.towerTransform.position.y+")");
             combatTarget = targetTower.GetComponent<CombatTarget>();
+            //Debug.Log(combatTarget.MaxHealthPoint);
             //This will arrange move and attack behaviour.
             actionManager(targetTower.towerTransform.position, min);
         }
@@ -178,6 +181,15 @@ namespace TowerAttack.AI
             //Only when the time since last attack is bigger than attackTime will the soldier attack.
             if (timeBetweenAttack >= attackTime)
             {
+                damage=basicDamage;
+                int i=Random.Range(1,101);
+                if(i<=criticalRate) damage*=1.5f;
+                else if(i<=30) damage*=1.2f;
+                else if(i<=50) damage+=i/24;
+                else if(i<=70) damage=damage+1.0f;
+                else if(i<=90) damage-=i/40;
+                else damage*=0.8f;
+
                 animator.ResetTrigger("StopAttack");
                 animator.SetTrigger("IsAttack");
                 timeBetweenAttack = 0f;
@@ -191,6 +203,21 @@ namespace TowerAttack.AI
         {
             if (combatTarget == null) return;
             combatTarget.TakeDamage(damage);
+        }
+
+        //Animation Event
+        void Shoot()
+        {
+            if (combatTarget == null) return;
+            if (soldierPiece.projectile!=null)
+                soldierPiece.LaunchProjectile(gameObject, projectileTransform, combatTarget,damage);
+        }
+
+        void Recover()
+        {
+            GetComponent<CombatTarget>().TakeDamage(damage);
+            GameObject spawn=Instantiate(attackEffect,projectileTransform);
+            spawn.GetComponent<Projectile>().DestroyObject();
         }
 
         //The attack behaviour should be cancel before moving.

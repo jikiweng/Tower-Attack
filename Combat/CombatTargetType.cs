@@ -1,4 +1,4 @@
-﻿namespace TowerAttack.AI
+﻿namespace TowerAttack.Combat
 {
     //CombatTargetType is used as an identification when attacking.
     //The CombatTargetType attach in CombatTarget is the type of the soldier.

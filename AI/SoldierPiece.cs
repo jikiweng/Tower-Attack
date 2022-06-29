@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TowerAttack.Combat;
 
 namespace TowerAttack.AI
 {
@@ -10,19 +11,16 @@ namespace TowerAttack.AI
     {
         //the cool down time after spawn a soldier.
         public float coolDownTime = 5f;
-        //the cool down time after the soldier attacks.
-        public float attackTime1 = 3f;
-        public float attackTime2 = 3f;
-        //the distance this soldier can detect target.
-        public float detectDistance = 5f;
-        //the distance of it's weapon can reach.
-        public float attackDistance1 = 5f;
-        public float attackDistance2 = 5f;
-        //the damage amount of this soldier.
-        public float damage1 = 5;
-        public float damage2 = 5;
         //the moving speed of this soldier.
         public float speed = 3f;
+        //the distance this soldier can detect target.
+        public float detectDistance = 5f;
+
+        public float attackTime=5f;
+        public float attackDistance=3f;
+        public float damage=50f;
+        public int criticalRate=10;
+        public Projectile projectile=null;
 
         //the int between 1~2 decides which attack type of this soldier.
         public int skillType=1;
@@ -46,11 +44,11 @@ namespace TowerAttack.AI
 
             //if skillType equals to 2, change the attackType after spawn it.
             if(skillType==2)
-                spawn.GetComponent<Animator>().SetBool("AttackType",false);
+                spawn.GetComponent<Animator>().SetBool("AttackType", false);
         }
 
         //Change skill for every spawned soldier. 
-        public bool ChangeSkill(int skill)
+        public bool ChangeSkill(int skill,float attackTime,float attackDistance,float damage,int criticalRate)
         {
             //If the skill clicked equals to current skill, do nothing.
             if(skill==skillType) return false;
@@ -63,14 +61,30 @@ namespace TowerAttack.AI
 
                 if (skill == 1)
                     animator.SetBool("AttackType", true);
-                if (skill == 2)
+                else if (skill == 2)
                     animator.SetBool("AttackType", false);
-
+                
+                BeginningSet(skill,attackTime,attackDistance,damage,criticalRate);
+                soldier.GetComponent<Soldier>().ChangeSkill();
             }
 
             //Change current skill type.
             skillType=skill;
             return true;
+        }
+
+        public void BeginningSet(int skill,float attackTime,float attackDistance,float damage,int criticalRate)
+        {
+            this.attackTime=attackTime;
+            this.attackDistance=attackDistance;
+            this.damage=damage;
+            this.criticalRate=criticalRate;
+        }
+
+        public void LaunchProjectile(GameObject instigator, Transform projectileTransform, CombatTarget combatTarget,float damage)
+        {
+            Projectile projectileInstance = Instantiate(projectile, projectileTransform.position,Quaternion.identity);
+            projectileInstance.AimAt(instigator, combatTarget, combatTargetType, damage);
         }
     }
 }

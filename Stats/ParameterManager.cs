@@ -24,6 +24,7 @@ namespace TowerAttack.Stats
             {
                 TowerList.Add(tower.GetComponent<Tower>());
             }
+            //Debug.Log(TowerList.Count);
         }
 
         //When a tower falls, it has to be removed from the tower list.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TowerAttack.AI
+namespace TowerAttack.Combat
 {
     //Attach to the balance text.
     public class Balance : MonoBehaviour

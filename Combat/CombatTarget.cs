@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using TowerAttack.Stats;
 
-namespace TowerAttack.AI
+namespace TowerAttack.Combat
 {
     //CombatTarget includes Tower and Soldiers, decide which one canbe attacked.
     //Attach to all soldiers and towers.
@@ -46,7 +46,10 @@ namespace TowerAttack.AI
         //If the remain health is equal to 0, call "die" function.
         public void TakeDamage(float damage)
         {
-            healthPoint = Mathf.Max(0, healthPoint -= damage);
+            Debug.Log(damage);
+            healthPoint-=damage;
+            healthPoint = Mathf.Max(0, healthPoint);
+            healthPoint=Mathf.Min(healthPoint,MaxHealthPoint);
             //This will trigger the method to adjust health bar.
             onDamage.Invoke();
             if (healthPoint <= 0) die();
