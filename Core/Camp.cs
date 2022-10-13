@@ -8,18 +8,25 @@ using UnityEngine.EventSystems;
 namespace TowerAttack.Core
 {
     //Attach to the camp prefab.
-    public class Camp : MonoBehaviour, IPointerClickHandler
+    public class Camp : MonoBehaviour
     {
         //Used to change color.
-        private Material material;
+        protected Material material;
+        protected MouseControl mouseControl;
 
-        void Awake()
+        protected virtual void Start()
         {
             material = GetComponentInChildren<Renderer>().material;
+            mouseControl=GameObject.FindObjectOfType<MouseControl>();
         }
 
         //Once clicked, change the clicked camp's color and show all the cost buttons.
-        public void OnPointerClick(PointerEventData eventData)
+        public virtual void ClickCamp()
+        {
+            setSelectedCamp();           
+        }
+
+        protected void setSelectedCamp()
         {
             //Find the campManager and set the this camo as selected camp.
             CampManager campManager = FindObjectOfType<CampManager>();
@@ -29,10 +36,10 @@ namespace TowerAttack.Core
             SetCampColorToDefault();
 
             //And then, change the clicked camp's color into red.
-            material.SetColor("_Color", Color.red);
+            material.SetColor("_Color", Color.grey);      
 
             //Show all the cost buttons.
-            if (!GameObject.FindWithTag("Skill").activeInHierarchy) return;
+            if (GameObject.FindWithTag("Skill")==null) return;
             campManager.ShowTarget("Cost");
         }
 

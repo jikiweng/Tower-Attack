@@ -35,7 +35,7 @@ namespace TowerAttack.Core
             if (!FindObjectOfType<Balance>().SetBalance(0 - cost)) return;
             
             //Spawn a soldier to spawn point.
-            Transform spawnPoint = camp.GetComponentInChildren<SpawnPoint>().transform;
+            Vector3 spawnPoint = camp.GetComponentInChildren<SpawnPoint>().transform.position;
             soldierPiece.SpawnSoldier(spawnPoint);
             //Reset cool down time.
             spawnCoolDown.ResetCoolDownTime();

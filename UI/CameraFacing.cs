@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TowerAttack.UI
 {
-    //Attach to health bar.
+    //Attach to the canvas contains health bar and damage text.
     public class CameraFacing : MonoBehaviour
     {
         private Transform UITransform;

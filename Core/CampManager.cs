@@ -2,6 +2,7 @@
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TowerAttack.UI;
 
 namespace TowerAttack.Core
 {
@@ -11,11 +12,21 @@ namespace TowerAttack.Core
         [SerializeField] GameObject spawnPrefab=null;
         //shows how many camps left.
         [SerializeField] Text remainText=null;
+        [SerializeField] Transform spawnParent=null;
         //while dragging, the parent need to be change to fit the whole screen size.
-        [SerializeField] Transform parentCanvasTransform=null;
+
         public GameObject[] costs;
         //when clicked, hides skill icon.
         public GameObject[] skills;
+
+        // PRIVATE STATE
+        private Camera cam;
+        private NavMeshSurface _surface;
+        private GameObject spawn;
+        // CACHED REFERENCES
+        private CanvasGroup canvasGroup;
+        private Material material;
+        private MouseControl mouseControl;
         
         //control the selected camp.
         private Camp camp;
@@ -27,16 +38,13 @@ namespace TowerAttack.Core
         public bool GetShowCost() { return isShowCost; }
         public void SetShowCost(bool isShow) { this.isShowCost = isShow; }
 
-        // PRIVATE STATE
-        Transform spriteTransform;
-        GameObject spawn;
-        // CACHED REFERENCES
-        CanvasGroup canvasGroup;
-
         // LIFECYCLE METHODS
         private void Awake()
         {
             canvasGroup=GetComponent<CanvasGroup>();
+            _surface=GameObject.FindObjectOfType<NavMeshSurface>();
+            mouseControl=GameObject.FindObjectOfType<MouseControl>();
+            cam=Camera.main;
         }
 
         //Once upon the image clicked, spawn a same image and set the parent to screen canvas.
@@ -45,13 +53,13 @@ namespace TowerAttack.Core
             //If there is no camps left, do nothing.
             if(remainText.text=="0") return;
 
-            //spawn the image.
-            spawn = Instantiate(gameObject, GetComponent<Transform>(), true);
-            spawn.GetComponent<CanvasGroup>().alpha = 0.8f;
+            //stop the map from moving.
+            mouseControl.IsMoving=false;
 
-            // Set parent.
-            spriteTransform = spawn.GetComponent<Transform>();
-            spriteTransform.SetParent(parentCanvasTransform, true);
+            //spawn the image.
+            spawn = Instantiate(spawnPrefab, transform.position, Quaternion.identity,spawnParent);
+            material=spawn.GetComponentInChildren<Renderer>().material;
+            //material.SetColor("_Color", new Color(0,0,0,180));
 
             //false=>block raycast.
             canvasGroup.blocksRaycasts = false;
@@ -61,33 +69,42 @@ namespace TowerAttack.Core
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
             if (remainText.text == "0") return;
-            spriteTransform.position = eventData.position;
+            
+            //Use raycast hit to change screen position into world position.
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(eventData.position);
+            if(!Physics.Raycast(ray,out hit,100f,LayerMask.GetMask("Default"))) return;
+            
+            //if(hit==null) return;
+            if(hit.transform.tag!="Ground") material.SetColor("_Color", Color.red);
+            else material.SetColor("_Color", Color.white);
+
+            spawn.transform.position=hit.point;
         }
 
         //Spawn a camp on the position where mouse ends to.
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             if (remainText.text == "0") return;
-            Destroy(spawn);
-
-            //Use raycast hit to change screen position into world position.
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(eventData.position);
-            Physics.Raycast(ray, out hit);
+            
+            //Open the block for raycast.
+            canvasGroup.blocksRaycasts = true;
+            mouseControl.IsMoving=true;
 
             //This will spawn a camp on the assigned position.
-            dropItem(hit.point);
+            if(material.color==Color.red)
+            {
+                Destroy(spawn);
+                return;
+            }
 
-            //Open the block for raycast and substract the remain camp.
-            canvasGroup.blocksRaycasts = true;
+            spawn.GetComponent<Camp>().enabled=true;
+
+            //Substract the remain camp
             int remain=int.Parse(remainText.text)-1;
             remainText.text=remain.ToString();
-        }
 
-        //Spawn a camp on the assigned position.
-        private void dropItem(Vector3 position)
-        {
-            Instantiate(spawnPrefab, position, Quaternion.identity);
+            _surface.BuildNavMesh();
         }
 
         //This method is used to display skill icons or cost buttons.

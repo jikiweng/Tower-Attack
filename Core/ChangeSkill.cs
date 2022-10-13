@@ -19,19 +19,22 @@ namespace TowerAttack.Core
         [SerializeField] float damage = 5f;
         [SerializeField] Projectile projectile=null;
         [SerializeField] int criticalRate=10;
+        [SerializeField] AudioClip attackSound=null;
 
         [SerializeField] SoldierPiece soldierPiece = null;
         //used to call the SetFalse method for hide icon.
         [SerializeField] ChangeSkill hideTarget = null;
-        //greyFrame should shows off when clicked.
-        [SerializeField] GameObject greyFrame = null;
+        //goldFrame should shows off when clicked.
+        [SerializeField] GameObject goldFrame = null;
         [SerializeField] Image image = null;
         [SerializeField] int skillType = 1;
 
         void Start()
         {
-            if(skillType==1)
-                soldierPiece.BeginningSet(skillType,attackTime,attackDistance,damage,criticalRate);
+            if(skillType!=1) return;
+
+            //the skill is set to be skill 1.
+            soldierPiece.BeginningSet(skillType,attackTime,attackDistance,damage,criticalRate,attackSound);
             if(projectile!=null)
                 soldierPiece.projectile=projectile;
         }
@@ -39,6 +42,7 @@ namespace TowerAttack.Core
         //When the icon clicked, open up this icon and close the other one.
         public void OnPointerClick(PointerEventData eventData)
         {
+            //if the clicked skill is the same as current skill, do nothing.
             if (!changeParameters())
                 return;
 
@@ -46,25 +50,29 @@ namespace TowerAttack.Core
             hideTarget.setFalse();
         }
 
+        //Some of the parameters in SoldierPiece script are read from this script.
+        //So everytime the skill changed, those parameters should be updated.
         private bool changeParameters()
         {
-            bool result=soldierPiece.ChangeSkill(skillType,attackTime,attackDistance,damage,criticalRate);
+            //the bool will be false if the clicked skill is the same as current skill.
+            bool result=soldierPiece.ChangeSkill(skillType,attackTime,attackDistance,damage,criticalRate,attackSound);
+            //not every soldier has projectile. do nothing if the soldier is not a shooter.
             if(projectile!=null)
                 soldierPiece.projectile=projectile;
             return result;
         }
 
-        //Show the greyFrame and change the color to dark.
+        //Show the goldFrame and change the color to dark.
         private void setTrue()
         {
-            greyFrame.SetActive(true);
-            image.color = new Color32(50, 50, 50, 255);
+            goldFrame.SetActive(true);
+            image.color = new Color32(255, 255, 255, 255);
         }
-        //Close the greyFrame and change the color to bright.
+        //Close the goldFrame and change the color to bright.
         public void setFalse()
         {
-            greyFrame.SetActive(false);
-            image.color = new Color32(255, 255, 255, 255);
+            goldFrame.SetActive(false);
+            image.color = new Color32(100, 100, 100, 255);
         }
     }
 }

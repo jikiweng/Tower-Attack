@@ -10,11 +10,11 @@ namespace TowerAttack.Stats
         //Used for detecting a tower and adjusting the distance.
         [SerializeField] float radius = 1f;
         //Only used for other script. Do not set any value.
-        public Transform towerTransform=null;
+        public Vector3 towerPosition;
         
         void Awake()
         {
-            towerTransform=GetComponent<Transform>();
+            towerPosition=GetComponent<Transform>().position;
         }
         
         //The Tower is usually too big for the soldier to reach the position.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TowerAttack.Combat;
+using TowerAttack.Stats;
 
 namespace TowerAttack.AI
 {
@@ -13,10 +14,34 @@ namespace TowerAttack.AI
         [SerializeField] SoldierPiece[] soldierPieces = new SoldierPiece[3];
         //There are 4 spawnPoints around the tower.
         [SerializeField] SpawnPoint[] spawnPoints=new SpawnPoint[4];
+        [SerializeField] string towerType="small tower";
+ 
+        private Vector3 spawnPointPostion;        
         //The balance for this tower used to spawn soldiers.
-        [SerializeField] int coin = 500;
+        private int coin; 
 
-        private Transform spawnPointTransform=null;
+        private void Start() 
+        {
+            int i=0;
+            
+            //the order is written in ParameterManager script.
+            switch (towerType)
+            {
+                case "small tower":
+                    i=0;
+                    break;
+                case "big tower":
+                    i=1;
+                    break;
+                case "castle":
+                    i=2;
+                    break;
+            }
+
+            //the list will change with fader.Difficulty.
+            //get the coins this tower has in this difficulty.
+            coin=GameObject.FindObjectOfType<ParameterManager>().TowerCoinList[i];
+        }
 
         void OnTriggerEnter(Collider other)
         {
@@ -27,7 +52,7 @@ namespace TowerAttack.AI
 
             //Get the transform component from the closest spawn point.
             SpawnPoint spawn=findNearestSpawnPoint(other.gameObject);
-            spawnPointTransform=spawn.GetComponent<Transform>();
+            spawnPointPostion=spawn.GetComponent<Transform>().position;
 
             //Close the detect collider. In case it may disturb the spawnpoint.
             GetComponent<SphereCollider>().enabled = false;
@@ -69,7 +94,7 @@ namespace TowerAttack.AI
         {
             int cost = soldierPieces[0].cost;
 
-            soldierPieces[0].SpawnSoldier(spawnPointTransform);
+            soldierPieces[0].SpawnSoldier(spawnPointPostion);
             coin -= cost;
 
             //CancelInvoke will cancel all the invoke method, 
@@ -84,7 +109,7 @@ namespace TowerAttack.AI
             int cost = soldierPieces[1].cost;
             if (coin < cost) return;
 
-            soldierPieces[1].SpawnSoldier(spawnPointTransform);
+            soldierPieces[1].SpawnSoldier(spawnPointPostion);
             coin -= cost;
         }
 
@@ -95,8 +120,15 @@ namespace TowerAttack.AI
             int cost = soldierPieces[2].cost;
             if (coin < cost) return;
 
-            soldierPieces[2].SpawnSoldier(spawnPointTransform);
+            soldierPieces[2].SpawnSoldier(spawnPointPostion);
             coin -= cost;
+        }
+
+        public void CancelAllRespawn()
+        {
+            CancelInvoke("spawnSoldier1");
+            if (soldierPieces[1] != null) CancelInvoke("spawnSoldier2");
+            if (soldierPieces[2] != null) CancelInvoke("spawnSoldier3");
         }
     }
 }
