@@ -42,11 +42,14 @@ namespace TowerAttack.AI
             }
 
             //if the tower is in the soldier's attack range, cancle moving and attack it.
-            if(combatTarget!=null&&towerList.Contains(combatTarget.GetComponent<Tower>())&&
-            Vector3.Distance(currentTransform.position,combatTarget.transform.position)<=attackDistance)            
+            if(combatTarget!=null&&towerList.Contains(combatTarget.GetComponent<Tower>()))
             {
-                cancelMove();
-                attack();
+                if(Vector3.Distance(currentTransform.position,combatTarget.transform.position)<=attackDistance)            
+                {       
+                    cancelMove();                
+                    attack();
+                }
+                //else return;
             }
             
             //if none of the above, move toward the nearest tower.

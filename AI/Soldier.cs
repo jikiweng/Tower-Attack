@@ -55,6 +55,8 @@ namespace TowerAttack.AI
         //use to identify this soldier is enemy or friend.
         protected CombatTargetType combatTargetType;
 
+        private Color color;
+
         private void Awake()
         {
             //get parameters from soldierPiece.
@@ -153,10 +155,15 @@ namespace TowerAttack.AI
             //Only when the time since last attack is longer than attackTime will the soldier attack.
             if (timeBetweenAttack >= attackTime)
             {
+                color=Color.red;
                 damage=basicDamage;
                 int i=Random.Range(1,101);
                 //critical calulation comes first. if the rate is 40, then means 40% to deal a critical hit.
-                if(i<=criticalRate) damage*=1.5f;
+                if(i<=criticalRate) 
+                {
+                    damage*=1.5f;
+                    color=new Color(255,0,255);
+                }
                 //the below calculation will be overrided by critical hit if the rate is higher.
                 else if(i<=30) damage*=1.2f;
                 else if(i<=50) damage+=i/24;
@@ -179,9 +186,9 @@ namespace TowerAttack.AI
         void Hit()
         {
             //if the target is killed by other soldier, deal no damage.
-            if (combatTarget == null) return;
+            if (combatTarget == null||combatTarget.IsDead) return;
             //else, deal a damage on target.
-            combatTarget.TakeDamage(damage);
+            combatTarget.TakeDamage(damage,color);
 
             source.Play();
         }
@@ -189,11 +196,11 @@ namespace TowerAttack.AI
         //The "Shoot" event will be triggered in attack animation.
         void Shoot()
         {
-            if (combatTarget == null) return;
+            if (combatTarget == null||combatTarget.IsDead) return;
             //every shooter soldierPiece has a projectile parameter.
             //instantiate the projectile to attack the enemy.
             if (soldierPiece.projectile!=null)
-                soldierPiece.LaunchProjectile(gameObject, projectileTransform, combatTarget,damage);
+                soldierPiece.LaunchProjectile(gameObject, projectileTransform, combatTarget,damage,color);
                 
             source.Play();
         }
@@ -209,7 +216,7 @@ namespace TowerAttack.AI
         private IEnumerator recoverBehaviour() 
         {
             //the damage is set to be negative so that HP can increase with TakeDamage method.
-            GetComponent<CombatTarget>().TakeDamage(damage);
+            GetComponent<CombatTarget>().TakeDamage(damage,color);
             //the partice effect is not a projectile but can still use the position.
             GameObject spawn=Instantiate(attackEffect,projectileTransform);
             //keep the particle effect for w while.

@@ -9,7 +9,8 @@ namespace TowerAttack.Title
     {
         public string Language="English";
         public string Difficulty="Normal";
-        public float volume=1f; 
+        public float SEvolume=1f; 
+        public float BGMvolume=1f;
         Coroutine currentAction = null;
 
         [SerializeField] float fadeOutTime=1f;
@@ -65,6 +66,15 @@ namespace TowerAttack.Title
 
             //after new scene loaded, the color of the screen fades out.
             yield return SceneManager.LoadSceneAsync(sceneIndex);
+            
+            GameObject[] SEaudios=GameObject.FindGameObjectsWithTag("SE");
+            foreach(GameObject SEaudio in SEaudios)
+            {
+                SEaudio.GetComponent<AudioSource>().volume=SEvolume;
+            }
+            GameObject BGMaudio=GameObject.FindGameObjectWithTag("BGM");
+            if(BGMaudio!=null) BGMaudio.GetComponent<AudioSource>().volume=BGMvolume*0.6f;
+
             loadingText.SetActive(false);
 
             Fade(0f, fadeInTime);

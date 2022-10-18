@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TowerAttack.UI;
+using TowerAttack.Title;
 
 namespace TowerAttack.Tutorial
 {
@@ -29,7 +30,7 @@ namespace TowerAttack.Tutorial
             //shoe the first page and the block object.
             showPage();
             block.SetActive(true);
-            buttonAudio=GameObject.FindGameObjectWithTag("SoundEffect").GetComponent<AudioSource>();
+            buttonAudio=GameObject.FindObjectOfType<Fader>().GetComponentInChildren<AudioSource>();
 
             mouseControl=GameObject.FindObjectOfType<MouseControl>();
             mouseControl.IsMoving=false;

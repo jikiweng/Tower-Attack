@@ -20,6 +20,7 @@ namespace TowerAttack.Combat
         private Vector3 startPoint;
         private GameObject instigator;
         private float damage;
+        private Color color;
 
         private void Start()
         {
@@ -27,12 +28,13 @@ namespace TowerAttack.Combat
         }
 
         //The projectile must look at in the direction of target. 
-        public void AimAt(GameObject instigator, CombatTarget target, CombatTargetType targetType, float damage)
+        public void AimAt(GameObject instigator, CombatTarget target, CombatTargetType targetType, float damage,Color color)
         {
             this.damage = damage;
             this.targetType=targetType;
             this.target = target;
             this.instigator = instigator;
+            this.color=color;
 
             //the position of the target is on the ground, so adjust the position by using the collider.
             CapsuleCollider targetCapsule = target.GetComponent<CapsuleCollider>();
@@ -66,7 +68,7 @@ namespace TowerAttack.Combat
                 //stop the projectile and deal damage.
                 //onHit.Invoke();
                 speed = 0;
-                combatTarget.TakeDamage(damage);
+                combatTarget.TakeDamage(damage,color);
 
                 Destroy(gameObject, lifeAfterImpact);
             }

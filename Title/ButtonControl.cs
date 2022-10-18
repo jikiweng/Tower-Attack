@@ -17,7 +17,7 @@ namespace TowerAttack.Title
         private void Start() 
         {
             fader=GameObject.FindObjectOfType<Fader>();
-            buttonAudio=GameObject.FindGameObjectWithTag("SoundEffect").GetComponent<AudioSource>();
+            buttonAudio=GameObject.FindGameObjectWithTag("SE").GetComponent<AudioSource>();
             
             //change the text with current language.
             switch(fader.Language)

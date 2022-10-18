@@ -39,18 +39,19 @@ namespace TowerAttack.Combat
         }
 
         //When taking damage,the remain health will be substracted by the damage.
-        public void TakeDamage(float damage)
+        public void TakeDamage(float damage,Color color)
         {
             //if the soldier is dead, do nothing.
             if(isDead) return;
-            
-            //spawn DamageText.
-            damageTextSpawner.SpawnDamageText(damage);
+            if(damage<0) color=Color.yellow;
                         
             //If the remain health is smaller than 0, set the health point to 0.
             healthPoint-=damage;
             healthPoint = Mathf.Max(0, healthPoint);
-            healthPoint=Mathf.Min(healthPoint,MaxHealthPoint);
+            healthPoint=Mathf.Min(healthPoint,MaxHealthPoint);            
+            
+            //spawn DamageText.
+            damageTextSpawner.SpawnDamageText(damage,color);
 
             //Call all the function set for the public event.
             //This will trigger the method to adjust health bar.

@@ -16,7 +16,8 @@ namespace TowerAttack.Title
         [SerializeField] Sprite unclicked=null;
         [SerializeField] Sprite clicked=null;
         [SerializeField] GameObject messagebox=null;
-        [SerializeField] Slider slider=null;
+        [SerializeField] Slider SEslider=null;
+        [SerializeField] Slider BGMslider=null;
 
         private Fader fader;
         private GameObject selectedLanguage;
@@ -55,8 +56,9 @@ namespace TowerAttack.Title
                     break;
             }   
 
-            buttonAudio=GameObject.FindGameObjectWithTag("SoundEffect").GetComponent<AudioSource>();
-            slider.value=fader.volume;
+            buttonAudio=GameObject.FindGameObjectWithTag("SE").GetComponent<AudioSource>();
+            SEslider.value=fader.SEvolume*100;
+            BGMslider.value=fader.BGMvolume*100;
         }
 
         //Called when the language buttonis are clicked. 
@@ -113,14 +115,19 @@ namespace TowerAttack.Title
         }
 
         //When the value for the slider is changed, set the volume for all sudio sourde
-        public void ChangeVolume()
+        public void ChangeSEVolume()
         {
-            AudioSource[] audios=GameObject.FindObjectsOfType<AudioSource>();
-            foreach(AudioSource audio in audios)
+            GameObject[] audios=GameObject.FindGameObjectsWithTag("SE");
+            foreach(GameObject audio in audios)
             {
-                audio.volume=slider.value;
+                audio.GetComponent<AudioSource>().volume=SEslider.value*0.01f;
             }
-            fader.volume=slider.value;
+            fader.SEvolume=SEslider.value*0.01f;
+        }
+
+        public void ChangeBGMVolume()
+        {
+            fader.BGMvolume=BGMslider.value*0.01f;
         }
     }
 }

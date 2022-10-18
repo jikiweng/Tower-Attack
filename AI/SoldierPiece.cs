@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TowerAttack.Combat;
+using TowerAttack.Title;
 
 namespace TowerAttack.AI
 {
@@ -55,6 +56,9 @@ namespace TowerAttack.AI
             GameObject spawn = Instantiate(soldierPrefab, position,Quaternion.identity,parent);
             if(soldierType!="") spawn.tag = soldierType;
 
+            Fader fader=GameObject.FindObjectOfType<Fader>();
+            spawn.GetComponentInChildren<AudioSource>().volume=fader.SEvolume;
+
             //if skillType equals to 2, change the attackType after spawn it.
             if(skillType==2)
                 spawn.GetComponent<Animator>().SetBool("AttackType", false);
@@ -100,10 +104,10 @@ namespace TowerAttack.AI
 
         //The projectile is kept in this script so the shooter will get the projectil first in this script,
         //and then move to Projectile script.
-        public void LaunchProjectile(GameObject instigator, Transform projectileTransform, CombatTarget combatTarget,float damage)
+        public void LaunchProjectile(GameObject instigator, Transform projectileTransform, CombatTarget combatTarget,float damage,Color color)
         {
             Projectile projectileInstance = Instantiate(projectile, projectileTransform.position,Quaternion.identity);
-            projectileInstance.AimAt(instigator, combatTarget, combatTargetType, damage);
+            projectileInstance.AimAt(instigator, combatTarget, combatTargetType, damage,color);
         }
     }
 }

@@ -11,17 +11,15 @@ namespace TowerAttack.UI
         [SerializeField] float textPosition=2;
 
         //Called on damage, spawn DamageText.
-        public void SpawnDamageText(float damage)
+        public void SpawnDamageText(float damage,Color color)
         {
             //spawn a new DamageTextand change the color into red.
             GameObject damageText=Instantiate(damageTextPrefab,transform);
-            Color color=Color.red;
 
             //some soldiers has the ability to recover. change the color into yellow.
             string damageToString=damage.ToString();
             if(damage<0)
             {
-                color=Color.yellow;
                 damage*=-1;
                 damageToString="+"+damage;
             }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using TowerAttack.Combat;
+using TowerAttack.UI;
 
 namespace TowerAttack.Tutorial
 {
@@ -12,6 +13,13 @@ namespace TowerAttack.Tutorial
         //the block is different from the block for tutorial. 
         [SerializeField] GameObject block=null;
 
+        private MouseControl mouseControl;
+
+        private void Start() 
+        {
+            mouseControl=GameObject.FindObjectOfType<MouseControl>();
+        }
+
         private void Update() 
         {
             if(pauseMenu==null) return;
@@ -21,6 +29,7 @@ namespace TowerAttack.Tutorial
             {
                 pauseMenu.SetActive(true);
                 Time.timeScale=0;
+                mouseControl.IsMoving=false;
                 block.SetActive(true);
                 //change the text in pause menu with current language.
                 pauseMenu.GetComponent<PauseMenu>().ChangeLanguage();

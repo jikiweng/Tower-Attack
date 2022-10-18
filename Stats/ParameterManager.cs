@@ -39,13 +39,13 @@ namespace TowerAttack.Stats
                 switch (difficulty)
                 {
                     case "Easy":
-                        TowerCoinList=new int[]{200,400,600};
-                        break;
-                    case "Normal":
                         TowerCoinList=new int[]{300,600,900};
                         break;
-                    case "Difficult":
+                    case "Normal":
                         TowerCoinList=new int[]{500,800,1100};
+                        break;
+                    case "Difficult":
+                        TowerCoinList=new int[]{700,1000,1500};
                         break;
                 }
             }

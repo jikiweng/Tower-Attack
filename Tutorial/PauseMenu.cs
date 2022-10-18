@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TowerAttack.Title;
+using TowerAttack.UI;
 
 namespace TowerAttack.Tutorial
 {
@@ -10,7 +11,8 @@ namespace TowerAttack.Tutorial
     { 
         [SerializeField] Text resumeText=null;    
         [SerializeField] Text backToMenuText=null;
-        [SerializeField] Slider slider=null;
+        [SerializeField] Slider SEslider=null;
+        [SerializeField] Slider BGMslider=null;
         //unclicked button image.
         [SerializeField] Sprite unclicked=null;
         //clicked button image.
@@ -19,11 +21,17 @@ namespace TowerAttack.Tutorial
 
         private Fader fader;
         private GameObject selectedLanguage;
+        private AudioSource buttonAudio;
+        private MouseControl mouseControl;
 
         private void Awake() 
         {
             fader=GameObject.FindObjectOfType<Fader>(); 
-            slider.value=fader.volume;
+            buttonAudio=fader.GetComponentInChildren<AudioSource>();
+            SEslider.value=fader.SEvolume*100;
+            BGMslider.value=fader.BGMvolume*100;
+
+            mouseControl=GameObject.FindObjectOfType<MouseControl>();
         }
 
         //Change the language of all text into current language.
@@ -50,6 +58,7 @@ namespace TowerAttack.Tutorial
         public void ReturnToMenu()
         {
             Time.timeScale=1;
+            mouseControl.IsMoving=true;
             fader.LoadNewScene(0);
         }
 
@@ -75,23 +84,38 @@ namespace TowerAttack.Tutorial
             if(changeText!=null) changeText.ChangeLanguage();        
         }
 
-        //When the value for the slider is changed, change the volume of all audio sources.
-        public void ChangeVolume()
+        //When the value for the SEslider is changed, change the volume of all audio sources.
+        public void ChangeSEVolume()
         {
-            AudioSource[] audios=GameObject.FindObjectsOfType<AudioSource>();
-            foreach(AudioSource audio in audios)
+            GameObject[] audios=GameObject.FindGameObjectsWithTag("SE");
+            foreach(GameObject audio in audios)
             {
-                audio.volume=slider.value;
+                audio.GetComponent<AudioSource>().volume=SEslider.value*0.01f;
             }
-            fader.volume=slider.value;
+            fader.SEvolume=SEslider.value*0.01f;
+        }
+
+        public void ChangeBGMVolume()
+        {
+            AudioSource audio=GameObject.FindGameObjectWithTag("BGM").GetComponent<AudioSource>();
+            audio.volume=BGMslider.value*0.01f*0.6f;
+            fader.BGMvolume=BGMslider.value*0.01f;
         }
 
         //Resume the time and back to the game scene.
         public void Resume()
         {
             Time.timeScale=1;
+            if(GameObject.FindObjectOfType<ChangeText>()==null)
+               mouseControl.IsMoving=true;
+               
             block.SetActive(false);
             gameObject.SetActive(false);
+        }
+
+        public void PlayButtonAudio()
+        {
+            buttonAudio.Play();
         }
     }
 }
